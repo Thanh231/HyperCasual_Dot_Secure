@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public GameObject babySprite;
     public CircleCollider2D circleCollider;
     private bool isStartGame = false;
+    private Vector3 defaultPos = new Vector3(0, 1.6f, 0);
     void OnEnable()
     {
         EventManager.StartGame += StartGame;
@@ -20,18 +21,22 @@ public class Player : MonoBehaviour
 
     private void ResetGame()
     {
-        throw new NotImplementedException();
+        transform.position = defaultPos;
+        transform.rotation = Quaternion.identity;
     }
 
     private void StartGame()
     {
         isStartGame = true;
+        babySprite.SetActive(true);
+        circleCollider.enabled = true;
     }
 
     public void DisablePlayerObject()
     {
         babySprite.SetActive(false);
         circleCollider.enabled = false;
+        isStartGame = false;
     }
 
     private void Update()
@@ -43,9 +48,8 @@ public class Player : MonoBehaviour
                 dir *= -1;
                 SoundManager.instance.Play(SoundManager.instance.moveSound);
             }
-            transform.RotateAround(Vector3.zero, transform.forward * dir,
-            Mathf.Clamp(GameManager.ins.speedPlayer[GameManager.ins.currentLevel],
-            0, GameManager.ins.speedPlayer.Count - 1) * Time.deltaTime);
+            float speed = GameManager.ins.GetPlayerSpeed();
+            transform.RotateAround(Vector3.zero, Vector3.forward, speed * dir * Time.deltaTime);
         }
 
     }

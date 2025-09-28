@@ -6,26 +6,55 @@ public class GameManager : MonoBehaviour
     public static GameManager ins;
 
     private string highScore;
-    public int currentLevel;
+    public int currentLevel = 0;
 
-    // public GamePlayManager gamePlayManager;
-    public List<float> speedPlayer;
+    // public List<float> speedPlayer;
 
-    public List<float> speedObstacle;
-    public List<float> pivotScore, speedIncreaseScore;
+    // public List<float> speedObstacle;
+    // public List<float> pivotScore, speedIncreaseScore;
 
+    public float basePivotScore = 100f;
+    public float pivotMultiplier = 2f;
+
+    public float basePlayerSpeed = 60;
+    public float playerSpeedMultiplier = 1.1f;
+
+    public float baseObstacleSpeed = 55;
+    public float obstacleSpeedMultiplier = 1.05f;
+
+    public float baseincreasePointSpeed = 10;
+    public float increasePointSpeedMultiplier = 1.05f;
     private void Awake()
     {
         if (ins == null)
         {
             ins = this;
-            // Init();
-            // DontDestroyOnLoad(gameObject);
         }
-        // else
-        // {
-        //     Destroy(gameObject);
-        // }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
+    public float GetPivotScoreForNextLevel()
+    {
+        return basePivotScore * Mathf.Pow(pivotMultiplier, currentLevel);
+    }
+
+    public float GetPlayerSpeed()
+    {
+        return basePlayerSpeed * Mathf.Pow(playerSpeedMultiplier, currentLevel);
+    }
+
+    public float GetObstacleSpeed()
+    {
+        return baseObstacleSpeed * Mathf.Pow(obstacleSpeedMultiplier, currentLevel);
+    }
+
+    public float GetIncreasePointSpeed()
+    {
+        return baseincreasePointSpeed * Mathf.Pow(increasePointSpeedMultiplier, currentLevel);
     }
     public int HighScore
     {
@@ -37,37 +66,22 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt(highScore, value);
         }
-    }
-
-    // public bool IsInitialized { get; set; }
-    // private void Init()
-    // {
-    //     IsInitialized = false;
-    //     currentScore = 0;
-    // }
-
-    // private string memuMain = "MenuMain";
-    // private string gamePlay = "GamePlay";
-
-    // public void LoadMenu()
-    // {
-    //     SceneManager.LoadScene(memuMain);
-    // }    
-    // public void LoadGamePlay()
-    // {
-    //     SceneManager.LoadScene(gamePlay);
-    // }    
+    } 
 
     public void PlayGame()
     {
-        // GameManager.ins.LoadGamePlay();
         SoundManager.instance.Play(SoundManager.instance.playSound);
         EventManager.StartGame?.Invoke();
     }
 
     public void EndGame()
     {
-        // GameManager.ins.LoadGamePlay();
+        currentLevel = 0;
         EventManager.ResetGame?.Invoke();
+    }
+
+    public void ShowMenu(int score)
+    {
+        EventManager.ShowMenu?.Invoke(score);
     }
 }
