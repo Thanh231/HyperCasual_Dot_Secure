@@ -4,56 +4,66 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [SerializeField] private List<float> speed;
-    [SerializeField] private GamePlayManager gamePlayManager;
+
     public GameObject explosion;
 
-    private float timer;
-    public float dir;
-    void Start()
+    private float timer = 0;
+    private float dir = 1;
+    private bool isStartGame = false;
+    void OnEnable()
     {
-        timer = 0f;
-        float faceDir = Random.Range(0, 2);
-        faceDir = (faceDir == 0) ? 1f : -1f;
-        dir = speed[Mathf.Clamp(gamePlayManager.currentLevel, 0, speed.Count - 1)] * faceDir;
+        EventManager.StartGame += StartGame;
+        EventManager.ResetGame += ResetGame;
     }
+
+    private void StartGame()
+    {
+        isStartGame = true;
+    }
+
+    void OnDisable()
+    {
+        EventManager.StartGame -= StartGame;
+        EventManager.ResetGame -= ResetGame;
+    }
+
+    private void ResetGame()
+    {
+        timer = 0;
+        dir = (Random.Range(0, 2) == 0) ? 1f : -1f;
+        isStartGame = false;
+    }
+
     void Update()
     {
         timer += Time.deltaTime;
-        if(timer  > 2.5f)
+        if (timer > 2.5f)
         {
             timer = 0f;
-            float faceDir = Random.Range(0, 2);
-            faceDir = (faceDir == 0) ? 1f : -1f;
-            dir = speed[Mathf.Clamp(gamePlayManager.currentLevel, 0, speed.Count - 1)] * faceDir;
+            dir = (Random.Range(0, 2) == 0) ? 1f : -1f;
         }
-    }
-    private void FixedUpdate()
-    {
-        transform.Rotate(0, 0, dir * Time.deltaTime);
+        transform.Rotate(0, 0, GameManager.ins.speedObstacle[Mathf.Clamp(GameManager.ins.currentLevel, 0, GameManager.ins.speedObstacle.Count - 1)] *dir * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(collision.gameObject);
+        // Destroy(collision.gameObject);
 
         SoundManager.instance.Play(SoundManager.instance.loseSound);
 
         if (explosion != null)
         {
-            Instantiate(explosion,collision.transform.position,Quaternion.identity);
+
+            explosion.transform.position = collision.gameObject.transform.position;
+            explosion.GetComponent<ParticleSystem>().Play();
         }
 
         StartCoroutine(EndGame());
     }
     private IEnumerator EndGame()
     {
-        gamePlayManager.hasFinish = true;
-
-       gamePlayManager.SetEndGame();
 
         yield return new WaitForSeconds(2f);
-
-        GameManager.ins.LoadMenu();
+        GameManager.ins.EndGame();
     }
 }

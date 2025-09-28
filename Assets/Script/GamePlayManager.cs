@@ -8,30 +8,29 @@ public class GamePlayManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelUp;
 
-    [SerializeField] private List<float> pivotScore, speed;
+    public int currentScore;
 
-    public int currentLevel;
     private float score;
     public bool hasFinish;
-    public float timer;
+    private float timer = 1;
     void Start()
     {
-        currentLevel = 0;
-        GameManager.ins.IsInitialized = true;
-        hasFinish = false;
+        // currentLevel = 0;
+        // GameManager.ins.IsInitialized = true;
+        // hasFinish = false;
     }
 
     void Update()
     {
         if (hasFinish) return;
 
-        score += speed[Mathf.Clamp(currentLevel, 0, pivotScore.Count - 1)] * Time.deltaTime;
+        score += GameManager.ins.speedIncreaseScore[Mathf.Clamp(GameManager.ins.currentLevel, 0, GameManager.ins.speedIncreaseScore.Count - 1)] * Time.deltaTime;
 
         scoreText.text = score.ToString("00000");
 
-        if (score > pivotScore[Mathf.Clamp(currentLevel, 0, pivotScore.Count - 1)])
+        if (score > GameManager.ins.pivotScore[Mathf.Clamp(GameManager.ins.currentLevel, 0, GameManager.ins.pivotScore.Count - 1)])
         {
-            currentLevel++;
+            GameManager.ins.currentLevel++;
             SoundManager.instance.Play(SoundManager.instance.updateSound);
 
             levelUp.gameObject.SetActive(true);
@@ -39,10 +38,10 @@ public class GamePlayManager : MonoBehaviour
             StartCoroutine(HideLevelUp());
         }
     }
-    public void SetEndGame()
-    {
-        GameManager.ins.currentScore = (int)score;
-    }
+    // public void SetEndGame()
+    // {
+    //     GameManager.ins.currentScore = (int)score;
+    // }
     private IEnumerator HideLevelUp()
     {
         yield return new WaitForSeconds(timer);

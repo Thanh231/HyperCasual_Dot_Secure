@@ -1,55 +1,80 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class MenuMain : MonoBehaviour
 {
-    public GameObject scoreTitle;
-    public GameObject score;
-    public TextMeshProUGUI highScore;
+    public GameObject tutorial;
+    public GameObject menu;
+    public TextMeshProUGUI currentScoreText;
+    public TextMeshProUGUI highScoreText;
+    private bool isIncreasePoint = false;
+    private int increaseDuration = 0;
+
+    private int currentScore = 0;
+    private int highScore = 0;
+
+    void OnEnable()
+    {
+        EventManager.StartGame += StartGame;
+        EventManager.ShowMenu += ShowMenu;
+    }
+    void OnDisable()
+    {
+        EventManager.StartGame -= StartGame;
+        EventManager.ShowMenu -= ShowMenu;
+    }
+
+
+    private void StartGame()
+    {
+        tutorial.SetActive(false);
+    }
+
+    public void SkipMenu()
+    {
+        tutorial.SetActive(true);
+    }
 
     private void Start()
     {
-        highScore.text = GameManager.ins.HighScore.ToString("0000");
-        if (!GameManager.ins.IsInitialized)
+
+        menu.SetActive(true);
+        highScore = GameManager.ins.HighScore;
+        highScoreText.text = "HIGH SCORE \n" + highScore.ToString("0000");
+        currentScoreText.text = "SCORE \n" + increaseDuration.ToString("0000");
+    }
+
+    private void ShowMenu(int score)
+    {
+        menu.SetActive(true);
+        currentScore = score;
+        highScore = GameManager.ins.HighScore;
+        highScoreText.text = "HIGH SCORE \n" + highScore.ToString("0000");
+        isIncreasePoint = true;
+    }
+
+    void Update()
+    {
+        if (isIncreasePoint)
         {
-            scoreTitle.SetActive(false);
-            score.SetActive(false);
+
+            if (increaseDuration > currentScore)
+            {
+                isIncreasePoint = false;
+            }
+            if (currentScore > highScore)
+            {
+                // StartCoroutine(ShowNewBest(currentScore));
+                currentScoreText.text = "NEW BEST \n" + increaseDuration.ToString("0000");
+                GameManager.ins.HighScore = currentScore;
+            }
+            else
+            {
+                currentScoreText.text = "SCORE \n" + increaseDuration.ToString("0000");
+            }
         }
-        else
-            ShowScore();
     }
 
-    private void ShowScore()
-    {
-        scoreTitle.SetActive(true);
-        score.SetActive(true);
-
-        int currentScore = GameManager.ins.currentScore;
-        int highScore = GameManager.ins.HighScore;
-        score.GetComponent<TextMeshProUGUI>().text = currentScore.ToString("0000");
-
-        if(currentScore > highScore)
-        {
-            StartCoroutine(ShowNewBest(currentScore));
-        }
-
-
-    }
-
-    private IEnumerator ShowNewBest(int currentScore)
-    {
-        scoreTitle.GetComponent<TextMeshProUGUI>().text = "NEW BEST";
-        GameManager.ins.HighScore = currentScore;
-        highScore.text = GameManager.ins.HighScore.ToString();
-
-        yield return new WaitForSeconds(3f);
-        scoreTitle.GetComponent<TextMeshProUGUI>().text = "SCORE";
-    }
-
-    public void PlayGame()
-    {
-        GameManager.ins.LoadGamePlay();
-        SoundManager.instance.Play(SoundManager.instance.playSound);
-    }
 }

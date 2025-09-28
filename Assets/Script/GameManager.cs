@@ -1,25 +1,31 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager ins; 
+    public static GameManager ins;
 
     private string highScore;
-    public int currentScore;
+    public int currentLevel;
+
+    // public GamePlayManager gamePlayManager;
+    public List<float> speedPlayer;
+
+    public List<float> speedObstacle;
+    public List<float> pivotScore, speedIncreaseScore;
 
     private void Awake()
     {
-        if(ins == null) 
+        if (ins == null)
         {
             ins = this;
-            Init();
-            DontDestroyOnLoad(gameObject);
+            // Init();
+            // DontDestroyOnLoad(gameObject);
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        // else
+        // {
+        //     Destroy(gameObject);
+        // }
     }
     public int HighScore
     {
@@ -33,22 +39,35 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool IsInitialized { get; set; }
-    private void Init()
+    // public bool IsInitialized { get; set; }
+    // private void Init()
+    // {
+    //     IsInitialized = false;
+    //     currentScore = 0;
+    // }
+
+    // private string memuMain = "MenuMain";
+    // private string gamePlay = "GamePlay";
+
+    // public void LoadMenu()
+    // {
+    //     SceneManager.LoadScene(memuMain);
+    // }    
+    // public void LoadGamePlay()
+    // {
+    //     SceneManager.LoadScene(gamePlay);
+    // }    
+
+    public void PlayGame()
     {
-        IsInitialized = false;
-        currentScore = 0;
+        // GameManager.ins.LoadGamePlay();
+        SoundManager.instance.Play(SoundManager.instance.playSound);
+        EventManager.StartGame?.Invoke();
     }
 
-    private string memuMain = "MenuMain";
-    private string gamePlay = "GamePlay";
-
-    public void LoadMenu()
+    public void EndGame()
     {
-        SceneManager.LoadScene(memuMain);
-    }    
-    public void LoadGamePlay()
-    {
-        SceneManager.LoadScene(gamePlay);
-    }    
+        // GameManager.ins.LoadGamePlay();
+        EventManager.ResetGame?.Invoke();
+    }
 }
