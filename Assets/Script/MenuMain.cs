@@ -20,11 +20,11 @@ public class MenuMain : MonoBehaviour
     {
         if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            tutorialText.text = "Tap to steer and avoid obstacle";
+            tutorialText.text = "Tap to steer and \navoid obstacle";
         }
         else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
         {
-            tutorialText.text = "Click to steer and avoid obstacle";
+            tutorialText.text = "Click to steer \nand avoid obstacle";
         }
         EventManager.StartGame += StartGame;
         EventManager.ShowMenu += ShowMenu;

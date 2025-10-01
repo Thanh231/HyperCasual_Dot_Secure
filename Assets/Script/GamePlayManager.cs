@@ -56,7 +56,6 @@ public class GamePlayManager : MonoBehaviour
     }
     private void SetEndGame()
     {
-        Debug.Log("score" + score);
         GameManager.ins.ShowMenu((int)score);
     }
     private IEnumerator HideLevelUp()
