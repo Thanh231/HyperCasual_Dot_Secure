@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     {
         currentLevel = 0;
         EventManager.ResetGame?.Invoke();
+        Debug.Log("123123");
     }
 
     public void ShowMenu(int score)
